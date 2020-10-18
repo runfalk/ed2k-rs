@@ -1,0 +1,13 @@
+[package]
+name = "ed2k"
+version = "0.1.0"
+authors = ["Andreas Runfalk <andreas@runfalk.se>"]
+edition = "2018"
+license = "MIT"
+readme = "README.md"
+description = "Pure Rust implementation of the ed2k hashing algorithm"
+keywords = ["crypto", "ed2k", "hash", "digest"]
+
+[dependencies]
+digest = "0.9"
+md4 = "0.9"
