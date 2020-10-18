@@ -48,7 +48,7 @@ impl Update for Ed2kHasher {
 
         let mut input_start = 0;
         while input_ref[input_start..].len() > 0 {
-            let read_len = std::cmp::min(self.chunk_remaining(), input_ref.len());
+            let read_len = std::cmp::min(self.chunk_remaining(), input_ref.len() - input_start);
 
             if self.chunk_remaining() == 0 {
                 self.finalize_chunk();
