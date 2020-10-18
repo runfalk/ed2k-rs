@@ -1,5 +1,4 @@
 use digest::generic_array::{typenum, GenericArray};
-use digest::Digest;
 use std::ffi::{OsStr, OsString};
 use std::fmt;
 use std::fs::File;
@@ -8,9 +7,10 @@ use std::path::Path;
 
 mod hash;
 
+pub use digest::Digest;
 pub use hash::Ed2kHasher;
 
-const BUFFER_SIZE: usize = 4096;
+const BUFFER_SIZE: usize = 8192;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Ed2k {
@@ -30,7 +30,6 @@ fn hash_from_path<P: AsRef<Path>>(path: P, use_legacy_hashing: bool) -> IoResult
     loop {
         let buf_len = file.read(&mut buf)?;
         hasher.update(&buf[..buf_len]);
-
         if buf_len == 0 {
             break;
         }

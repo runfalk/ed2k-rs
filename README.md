@@ -15,6 +15,13 @@ Disclaimer
 * Please don't use this for illegal file sharing
 
 
+Performance
+-----------
+I have not bothered with super rigorous performance testing. However, on my
+computer I have achieved 842 MiB/s in single threaded hashing. `sha256sum` on
+the same set of files is 1573 MiB/s (also single threaded).
+
+
 Example
 -------
 How to calculate the hash of a file:
