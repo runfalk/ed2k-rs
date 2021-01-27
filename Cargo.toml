@@ -11,3 +11,8 @@ keywords = ["crypto", "ed2k", "hash", "digest"]
 [dependencies]
 digest = "0.9"
 md4 = "0.9"
+
+[dev-dependencies]
+anyhow = "1"
+crossbeam = "0.8"
+num_cpus = "1.0"
