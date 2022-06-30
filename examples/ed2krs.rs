@@ -1,4 +1,5 @@
 use anyhow::Result;
+use clap::Parser;
 use crossbeam::channel;
 use ed2k::Ed2k;
 use std::collections::HashMap;
@@ -6,24 +7,25 @@ use std::env;
 use std::num::NonZeroUsize;
 use std::path::PathBuf;
 use std::thread;
-use structopt::StructOpt;
 
-#[derive(Debug, StructOpt)]
-#[structopt(
+#[derive(Debug, Parser)]
+#[clap(
+    author,
+    version,
     name = "ed2krs",
     about = "Calculate the eD2k link for the given set of files."
 )]
 struct Opt {
     /// Use legacy hashing algorithm
-    #[structopt(short = "l", long = "legacy")]
+    #[clap(short = 'l', long = "legacy")]
     legacy: bool,
 
     /// Number of threads to use. Uses the number of CPU cores by default
-    #[structopt(short = "t", long = "num-threads")]
+    #[clap(short = 't', long = "num-threads")]
     num_threads: Option<NonZeroUsize>,
 
     /// Files to hash
-    #[structopt(parse(from_os_str), required = true)]
+    #[clap(parse(from_os_str), required = true)]
     files: Vec<PathBuf>,
 }
 
