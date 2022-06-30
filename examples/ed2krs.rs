@@ -1,6 +1,6 @@
 use anyhow::Result;
 use crossbeam::channel;
-use ed2k::{Ed2k, Ed2kLegacy};
+use ed2k::Ed2k;
 use std::collections::HashMap;
 use std::env;
 use std::num::NonZeroUsize;
@@ -46,7 +46,7 @@ fn main() -> Result<()> {
         if opts.legacy {
             thread::spawn(move || {
                 for (i, path) in rx {
-                    tx.send((i, Ed2kLegacy::from_path(&path))).unwrap();
+                    tx.send((i, Ed2k::from_path_legacy(&path))).unwrap();
                 }
             });
         } else {

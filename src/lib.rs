@@ -19,8 +19,6 @@ pub struct Ed2k {
     hash: GenericArray<u8, typenum::U16>,
 }
 
-pub struct Ed2kLegacy;
-
 fn hash_from_path<P: AsRef<Path>>(path: P, use_legacy_hashing: bool) -> IoResult<Ed2k> {
     let path = path.as_ref();
     let mut hasher = Ed2kHasher::with_legacy_hashing(use_legacy_hashing);
@@ -43,15 +41,13 @@ fn hash_from_path<P: AsRef<Path>>(path: P, use_legacy_hashing: bool) -> IoResult
     })
 }
 
-impl Ed2kLegacy {
-    pub fn from_path<P: AsRef<Path>>(path: P) -> IoResult<Ed2k> {
-        hash_from_path(path, true)
-    }
-}
-
 impl Ed2k {
     pub fn from_path<P: AsRef<Path>>(path: P) -> IoResult<Self> {
         hash_from_path(path, false)
+    }
+
+    pub fn from_path_legacy<P: AsRef<Path>>(path: P) -> IoResult<Self> {
+        hash_from_path(path, true)
     }
 
     pub fn filename(&self) -> &OsStr {

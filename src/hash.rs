@@ -1,5 +1,5 @@
 use digest::generic_array::{typenum, GenericArray};
-use digest::{Digest, FixedOutput, Reset, Update};
+use digest::{Digest, FixedOutput, HashMarker, OutputSizeUser, Reset, Update};
 use md4::Md4;
 
 #[derive(Clone, Debug, Default)]
@@ -42,19 +42,18 @@ impl Ed2kHasher {
     }
 }
 
-impl Update for Ed2kHasher {
-    fn update(&mut self, input: impl AsRef<[u8]>) {
-        let input_ref = input.as_ref();
+impl HashMarker for Ed2kHasher {}
 
-        let mut input_start = 0;
-        while input_ref[input_start..].len() > 0 {
-            let read_len = std::cmp::min(self.chunk_remaining(), input_ref.len() - input_start);
+impl Update for Ed2kHasher {
+    fn update(&mut self, mut input: &[u8]) {
+        while input.len() > 0 {
+            let read_len = std::cmp::min(self.chunk_remaining(), input.len());
 
             if self.chunk_remaining() == 0 {
                 self.finalize_chunk();
             }
 
-            let input_slice = &input_ref[input_start..input_start + read_len];
+            let input_slice = &input[..read_len];
             Digest::update(&mut self.md4_hasher, input_slice);
             self.current_chunk_len += read_len;
 
@@ -64,40 +63,31 @@ impl Update for Ed2kHasher {
                 self.finalize_chunk();
             }
 
-            input_start += read_len;
+            input = &input[read_len..];
         }
     }
 }
 
 impl Reset for Ed2kHasher {
     fn reset(&mut self) {
-        self.md4_hasher = Default::default();
-        self.chunk_hasher = Default::default();
-        self.num_full_chunks = 0;
-        self.current_chunk_len = 0;
+        *self = Self {
+            use_legacy_hashing: self.use_legacy_hashing,
+            ..Default::default()
+        }
     }
 }
 
-impl FixedOutput for Ed2kHasher {
+impl OutputSizeUser for Ed2kHasher {
     type OutputSize = typenum::U16;
+}
 
+impl FixedOutput for Ed2kHasher {
     fn finalize_into(mut self, out: &mut GenericArray<u8, Self::OutputSize>) {
         if self.num_full_chunks == 0 {
-            self.md4_hasher.finalize_into(out);
+            FixedOutput::finalize_into(self.md4_hasher, out);
         } else {
             self.finalize_chunk();
-            self.chunk_hasher.finalize_into(out);
-        }
-        self.num_full_chunks = 0;
-        self.current_chunk_len = 0;
-    }
-
-    fn finalize_into_reset(&mut self, out: &mut GenericArray<u8, Self::OutputSize>) {
-        if self.num_full_chunks == 0 {
-            self.md4_hasher.finalize_into_reset(out);
-        } else {
-            self.finalize_chunk();
-            self.chunk_hasher.finalize_into_reset(out);
+            FixedOutput::finalize_into(self.chunk_hasher, out);
         }
         self.num_full_chunks = 0;
         self.current_chunk_len = 0;
