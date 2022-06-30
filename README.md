@@ -51,7 +51,7 @@ println!("Hash is: {:?}", hasher.finalize());
 Since file hashing is so common there is a convenience wrapper for this:
 
 ```rust
-// Use Ed2kLegacy::from_path(...) for legacy variant
+// Use Ed2k::from_path_legacy(...) for legacy variant
 let ed2k = Ed2k::from_path("/path/to/file")?;
 
 // The Display trait provides an ed2k link in the format
