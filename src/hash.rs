@@ -46,7 +46,7 @@ impl HashMarker for Ed2kHasher {}
 
 impl Update for Ed2kHasher {
     fn update(&mut self, mut input: &[u8]) {
-        while input.len() > 0 {
+        while !input.is_empty() {
             let read_len = std::cmp::min(self.chunk_remaining(), input.len());
 
             if self.chunk_remaining() == 0 {

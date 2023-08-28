@@ -17,20 +17,20 @@ use std::thread;
 )]
 struct Opt {
     /// Use legacy hashing algorithm
-    #[clap(short = 'l', long = "legacy")]
+    #[arg(short = 'l', long)]
     legacy: bool,
 
     /// Number of threads to use. Uses the number of CPU cores by default
-    #[clap(short = 't', long = "num-threads")]
+    #[arg(short = 't', long)]
     num_threads: Option<NonZeroUsize>,
 
     /// Files to hash
-    #[clap(parse(from_os_str), required = true)]
+    #[arg(required = true)]
     files: Vec<PathBuf>,
 }
 
 fn main() -> Result<()> {
-    let opts = Opt::from_args();
+    let opts = Opt::parse();
 
     // Create communication channels
     let (job_tx, job_rx) = channel::unbounded();
